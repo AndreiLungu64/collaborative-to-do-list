@@ -8,7 +8,8 @@
     "dev": "nodemon src/app.js",
     "lint": "eslint src/",
     "test": "jest --coverage",
-    "migrate": "node migrations/run.js"
+    "migrate": "node migrations/run.js",
+    "seed": "node seeds/run.js"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",
