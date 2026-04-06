@@ -1,6 +1,6 @@
 # 📋 Document de Viziune — Collaborative To-Do App
 
-> **Proiect MPI** · Stack: Express.js · React · PostgreSQL  
+> **Proiect MPI** · Stack: Express.ts · React · PostgreSQL  
 > **Scop**: Simularea completă a ciclului de viață al unei aplicații (ALM) folosind practici Agile & DevOps.  
 > **GitHub Repository**: [https://github.com/AndreiLungu64/collaborative-to-do-list](https://github.com/AndreiLungu64/collaborative-to-do-list)
 
@@ -96,7 +96,7 @@ DATABASE_URL=postgresql://scraper:Scraper123#@38.242.226.83:5432/MPI
 
 ```
 ┌─────────────────────┐       ┌──────────────────────┐       ┌───────────────────────────┐
-│   React Frontend    │◄─────►│  Express.js Backend  │◄─────►│   PostgreSQL DB (Remote)  │
+│   React Frontend    │◄─────►│  Express.ts Backend  │◄─────►│   PostgreSQL DB (Remote)  │
 │   (Port 3000)       │ REST  │   (Port 5000)        │       │   38.242.226.83:5432/MPI  │
 │                     │  API  │                      │       │                           │
 │ - Kanban Board      │       │ - Auth (JWT)         │       │ - users                   │
@@ -402,7 +402,7 @@ Toți 4 membrii lucrează **simultan**, fiecare pe propriul branch. Nimeni nu a�
 develop (branch-ul comun unde se integrează tot)
     │
     ├── feature/BE-auth-login        ← Backend Dev lucrează aici
-    │       (Express.js, rute, DB)
+    │       (Express.ts, rute, DB)
     │
     ├── feature/FE-login-page        ← Frontend Dev lucrează aici
     │       (React, componente, UI)
@@ -543,10 +543,11 @@ git push origin feature/FE-login-page
 ### 7.1 🔧 Backend Developer (Champion)
 
 **Responsabilități principale:**
-- Arhitectura API-ului REST (Express.js)
+- Arhitectura API-ului REST (Express.ts)
 - Schema și migrările bazei de date (PostgreSQL)
 - Logica de business (permisiuni, deadline management)
 - Autentificarea (JWT)
+- Foloseste limbajul TypeScript, nu JavaScript
 
 **Structura de Foldere:**
 
@@ -554,34 +555,34 @@ git push origin feature/FE-login-page
 backend/
 ├── src/
 │   ├── config/
-│   │   ├── db.js              # Conexiune PostgreSQL (pg / knex)
-│   │   └── env.js             # Variabile de mediu
+│   │   ├── db.ts              # Conexiune PostgreSQL (pg / knex)
+│   │   └── env.ts             # Variabile de mediu
 │   ├── middleware/
-│   │   ├── auth.js            # Verificare JWT
-│   │   ├── isTaskAdmin.js     # Verificare admin task
-│   │   └── errorHandler.js    # Error handling centralizat
+│   │   ├── auth.ts            # Verificare JWT
+│   │   ├── isTaskAdmin.ts     # Verificare admin task
+│   │   └── errorHandler.ts    # Error handling centralizat
 │   ├── routes/
-│   │   ├── auth.routes.js     # /api/auth/*
-│   │   └── tasks.routes.js    # /api/tasks/*
+│   │   ├── auth.routes.ts     # /api/auth/*
+│   │   └── tasks.routes.ts    # /api/tasks/*
 │   ├── controllers/
-│   │   ├── auth.controller.js
-│   │   └── tasks.controller.js
+│   │   ├── auth.controller.ts
+│   │   └── tasks.controller.ts
 │   ├── models/
-│   │   ├── user.model.js
-│   │   └── task.model.js
+│   │   ├── user.model.ts
+│   │   └── task.model.ts
 │   ├── services/
-│   │   ├── auth.service.js
-│   │   └── task.service.js
+│   │   ├── auth.service.ts
+│   │   └── task.service.ts
 │   ├── utils/
-│   │   └── deadlineCron.js    # Job programat pentru deadline zone
-│   └── app.js                 # Express app setup
+│   │   └── deadlineCron.ts    # Job programat pentru deadline zone
+│   └── app.ts                 # Express app setup
 ├── migrations/                # Migrări SQL
 ├── seeds/                     # Date de test
 ├── tests/
 │   ├── unit/
 │   └── integration/
 ├── Dockerfile
-├── package.json
+├── package.tson
 └── .env.example
 ```
 
@@ -589,7 +590,7 @@ backend/
 
 1. **Separation of Concerns** — Controller → Service → Model. Controller-ul nu conține logică de business.
 2. **Validare input** — Folosește `express-validator` sau `joi` pe fiecare endpoint.
-3. **Error handling centralizat** — Toate erorile trec prin middleware-ul `errorHandler.js`. Nu lăsa Express să trimită stack traces în producție.
+3. **Error handling centralizat** — Toate erorile trec prin middleware-ul `errorHandler.ts`. Nu lăsa Express să trimită stack traces în producție.
 4. **Variabile de mediu** — NICIODATĂ credențiale hardcodate. Totul în `.env` (care e în `.gitignore`). Oferă `.env.example` colegilor.
 5. **Migrări, nu SQL manual** — Folosește `knex migrate` sau `node-pg-migrate` pentru orice schimbare de schemă.
 6. **Teste unitare** — Minim pe service layer. Folosește `jest` + `supertest` pentru integration tests pe rute.
@@ -599,7 +600,7 @@ backend/
 10. **CORS** — Configurează `cors` middleware strict doar pentru frontend-ul tău.
 
 **Checklist Sprint 0:**
-- [ ] Init proiect Express.js cu structura de foldere
+- [ ] Init proiect Express.ts cu structura de foldere
 - [ ] Configurare conexiune PostgreSQL
 - [ ] Setup migrări (knex / node-pg-migrate)
 - [ ] Dockerfile backend (multi-stage build)
@@ -624,51 +625,51 @@ frontend/
 ├── src/
 │   ├── components/
 │   │   ├── common/
-│   │   │   ├── Button.jsx
-│   │   │   ├── Modal.jsx
-│   │   │   └── Loader.jsx
+│   │   │   ├── Button.tsx
+│   │   │   ├── Modal.tsx
+│   │   │   └── Loader.tsx
 │   │   ├── auth/
-│   │   │   ├── LoginForm.jsx
-│   │   │   └── RegisterForm.jsx
+│   │   │   ├── LoginForm.tsx
+│   │   │   └── RegisterForm.tsx
 │   │   ├── kanban/
-│   │   │   ├── KanbanBoard.jsx
-│   │   │   ├── KanbanColumn.jsx
-│   │   │   └── TaskCard.jsx
+│   │   │   ├── KanbanBoard.tsx
+│   │   │   ├── KanbanColumn.tsx
+│   │   │   └── TaskCard.tsx
 │   │   ├── calendar/
-│   │   │   ├── CalendarView.jsx
-│   │   │   └── CalendarEvent.jsx
+│   │   │   ├── CalendarView.tsx
+│   │   │   └── CalendarEvent.tsx
 │   │   └── tasks/
-│   │       ├── TaskForm.jsx
-│   │       ├── TaskDetail.jsx
-│   │       └── AccessManager.jsx
+│   │       ├── TaskForm.tsx
+│   │       ├── TaskDetail.tsx
+│   │       └── AccessManager.tsx
 │   ├── pages/
-│   │   ├── Dashboard.jsx       # Kanban Board principal
-│   │   ├── Calendar.jsx        # Calendar view
-│   │   ├── Login.jsx
-│   │   ├── Register.jsx
-│   │   └── CompletedTasks.jsx
+│   │   ├── Dashboard.tsx       # Kanban Board principal
+│   │   ├── Calendar.tsx        # Calendar view
+│   │   ├── Login.tsx
+│   │   ├── Register.tsx
+│   │   └── CompletedTasks.tsx
 │   ├── context/
-│   │   └── AuthContext.jsx     # JWT state global
+│   │   └── AuthContext.tsx     # JWT state global
 │   ├── hooks/
-│   │   ├── useAuth.js
-│   │   └── useTasks.js
+│   │   ├── useAuth.ts
+│   │   └── useTasks.ts
 │   ├── services/
-│   │   └── api.js              # Axios instance + interceptors
+│   │   └── api.ts              # Axios instance + interceptors
 │   ├── utils/
-│   │   └── dateHelpers.js
-│   ├── App.jsx
-│   └── main.jsx
+│   │   └── dateHelpers.ts
+│   ├── App.tsx
+│   └── main.tsx
 ├── public/
 ├── Dockerfile
-├── package.json
-├── vite.config.js
+├── package.tson
+├── vite.config.ts
 └── .env.example
 ```
 
 **Best Practices:**
 
 1. **Component-Based Architecture** — Componente mici, reutilizabile. Un component = o responsabilitate.
-2. **API Layer separat** — Toate apelurile HTTP sunt în `services/api.js` cu un Axios instance configurat (base URL, interceptors pentru JWT).
+2. **API Layer separat** — Toate apelurile HTTP sunt în `services/api.ts` cu un Axios instance configurat (base URL, interceptors pentru JWT).
 3. **Auth cu Context API** — JWT-ul se stochează în `localStorage` și se injectează automat prin Axios interceptor. AuthContext gestionează starea user-ului global.
 4. **React Router** — Routing cu `react-router-dom`. Implementează `ProtectedRoute` pentru paginile care necesită autentificare.
 5. **Kanban Drag & Drop** — Folosește `@hello-pangea/dnd` (fork menținut de react-beautiful-dnd) pentru drag & drop între coloane.
@@ -717,20 +718,20 @@ TaskCard.module.css   →   import styles from './TaskCard.module.css'
 ```
 e2e/                             # Teste End-to-End (Cypress sau Playwright)
 ├── tests/
-│   ├── auth.spec.js             # Login, Register, Logout
-│   ├── task-crud.spec.js        # Creare, Editare, Ștergere
-│   ├── kanban-board.spec.js     # Drag & drop, schimbare status
-│   ├── calendar.spec.js         # Vizualizare task-uri în calendar
-│   ├── permissions.spec.js      # Acces control
-│   └── deadline.spec.js         # Deadline zone, overdue marking
+│   ├── auth.spec.ts             # Login, Register, Logout
+│   ├── task-crud.spec.ts        # Creare, Editare, Ștergere
+│   ├── kanban-board.spec.ts     # Drag & drop, schimbare status
+│   ├── calendar.spec.ts         # Vizualizare task-uri în calendar
+│   ├── permissions.spec.ts      # Acces control
+│   └── deadline.spec.ts         # Deadline zone, overdue marking
 ├── fixtures/
-│   └── test-data.json           # Date de test predefinite
+│   └── test-data.tson           # Date de test predefinite
 ├── support/
-│   ├── commands.js              # Custom commands (login, createTask)
-│   └── helpers.js
+│   ├── commands.ts              # Custom commands (login, createTask)
+│   └── helpers.ts
 ├── Dockerfile                   # Container separat pentru teste E2E
-├── playwright.config.js         # sau cypress.config.js
-└── package.json
+├── playwright.config.ts         # sau cypress.config.ts
+└── package.tson
 ```
 
 **Best Practices:**
@@ -852,7 +853,7 @@ e2e/                             # Teste End-to-End (Cypress sau Playwright)
    # Build stage
    FROM node:20-alpine AS builder
    WORKDIR /app
-   COPY package*.json ./
+   COPY package*.tson ./
    RUN npm ci --only=production
 
    # Production stage
@@ -861,7 +862,7 @@ e2e/                             # Teste End-to-End (Cypress sau Playwright)
    COPY --from=builder /app/node_modules ./node_modules
    COPY . .
    EXPOSE 5000
-   CMD ["node", "src/app.js"]
+   CMD ["node", "src/app.ts"]
    ```
 
 3. **GitHub Actions CI Pipeline** (pe fiecare PR):
@@ -965,7 +966,7 @@ Pasul 1 — Team Lead: Configurează GitHub Projects pe repo-ul existent
      ↓
 Pasul 2 — DevOps: Setup Docker Compose + Dockerfiles
      ↓
-Pasul 3 — Backend: Init Express.js, schema DB, health check
+Pasul 3 — Backend: Init Express.ts, schema DB, health check
      ↓   (în paralel)
 Pasul 3'— Frontend: Init React (Vite), routing schelet
      ↓   (în paralel)
@@ -989,15 +990,15 @@ collaborative-todo/
 │   ├── tests/
 │   ├── migrations/
 │   ├── Dockerfile
-│   └── package.json
+│   └── package.tson
 ├── frontend/
 │   ├── src/
 │   ├── Dockerfile
-│   └── package.json
+│   └── package.tson
 ├── e2e/
 │   ├── tests/
 │   ├── Dockerfile
-│   └── package.json
+│   └── package.tson
 ├── nginx/
 │   └── default.conf
 ├── scripts/
