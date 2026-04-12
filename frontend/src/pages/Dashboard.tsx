@@ -5,26 +5,18 @@
  * Supports drag-and-drop via @hello-pangea/dnd.
  */
 import { useState, useMemo, ChangeEvent } from 'react';
-import { DragDropContext, Droppable, Draggable, DropResult } from '@hello-pangea/dnd';
-import { AnimatePresence } from 'framer-motion';
+import { DropResult } from '@hello-pangea/dnd';
 import Navbar from '../components/common/Navbar';
 import Button from '../components/common/Button';
 import Loader from '../components/common/Loader';
-import Modal from '../components/common/Modal';
-import TaskCard from '../components/kanban/TaskCard';
+import KanbanBoard from '../components/kanban/KanbanBoard';
 import TaskForm from '../components/tasks/TaskForm';
+import TaskDetail from '../components/tasks/TaskDetail';
 import { useTasks } from '../hooks/useTasks';
 import { isInDeadlineZone, isOverdue } from '../utils/dateHelpers';
-import { Task, TaskFormData } from '../types';
+import { Task, TaskFormData, ColumnDef } from '../types';
 import toast from 'react-hot-toast';
 import './Dashboard.css';
-
-interface ColumnDef {
-  id: string;
-  title: string;
-  icon: string;
-  color: string;
-}
 
 const COLUMNS: ColumnDef[] = [
   { id: 'todo', title: 'To Do', icon: '📋', color: 'var(--status-todo)' },
@@ -146,55 +138,12 @@ const Dashboard = () => {
       </div>
 
       {/* Kanban Board */}
-      <DragDropContext onDragEnd={handleDragEnd}>
-        <div className="kanban-board">
-          {COLUMNS.map((col) => (
-            <div key={col.id} className="kanban-column">
-              <div className="kanban-column-header" style={{ '--col-color': col.color } as React.CSSProperties}>
-                <div className="kanban-column-title">
-                  <span className="kanban-column-icon">{col.icon}</span>
-                  <span>{col.title}</span>
-                </div>
-                <span className="badge-count" style={{ background: `${col.color}20`, color: col.color }}>
-                  {columns[col.id]?.length || 0}
-                </span>
-              </div>
-
-              <Droppable droppableId={col.id}>
-                {(provided, snapshot) => (
-                  <div
-                    ref={provided.innerRef}
-                    {...provided.droppableProps}
-                    className={`kanban-column-body ${snapshot.isDraggingOver ? 'drag-over' : ''}`}
-                  >
-                    <AnimatePresence>
-                      {columns[col.id]?.map((task, index) => (
-                        <Draggable key={task.id} draggableId={task.id.toString()} index={index}>
-                          {(provided, snapshot) => (
-                            <TaskCard
-                              task={task}
-                              onClick={handleTaskClick}
-                              provided={provided}
-                              snapshot={snapshot}
-                            />
-                          )}
-                        </Draggable>
-                      ))}
-                    </AnimatePresence>
-                    {provided.placeholder}
-
-                    {columns[col.id]?.length === 0 && (
-                      <div className="kanban-empty">
-                        <p>Nicio activitate</p>
-                      </div>
-                    )}
-                  </div>
-                )}
-              </Droppable>
-            </div>
-          ))}
-        </div>
-      </DragDropContext>
+      <KanbanBoard
+        columns={columns}
+        columnDefs={COLUMNS}
+        onDragEnd={handleDragEnd}
+        onTaskClick={handleTaskClick}
+      />
 
       {/* Loading overlay */}
       {loading && <Loader fullScreen />}
@@ -209,52 +158,10 @@ const Dashboard = () => {
 
       {/* Task Detail Modal */}
       {selectedTask && !showForm && (
-        <Modal
-          isOpen={true}
+        <TaskDetail
+          task={selectedTask}
           onClose={() => setSelectedTask(null)}
-          title={selectedTask.title}
-          className="task-detail"
-        >
-          <div className="task-detail-body">
-            <div className="task-detail-row">
-              <span className="label-md">Status</span>
-              <span className={`badge badge-${selectedTask.status === 'overdue' ? 'critical' : 'low'}`}>
-                {selectedTask.status}
-              </span>
-            </div>
-            <div className="task-detail-row">
-              <span className="label-md">Prioritate</span>
-              <span className={`badge badge-${selectedTask.priority}`}>
-                {selectedTask.priority}
-              </span>
-            </div>
-            <div className="task-detail-row">
-              <span className="label-md">Vizibilitate</span>
-              <span>{selectedTask.visibility}</span>
-            </div>
-            <div className="task-detail-row">
-              <span className="label-md">Deadline</span>
-              <span>{new Date(selectedTask.deadline).toLocaleString('ro-RO')}</span>
-            </div>
-            {selectedTask.description && (
-              <div className="task-detail-desc">
-                <span className="label-md">Descriere</span>
-                <p>{selectedTask.description}</p>
-              </div>
-            )}
-            {selectedTask.admin_username && (
-              <div className="task-detail-row">
-                <span className="label-md">Creat de</span>
-                <div className="flex items-center gap-2">
-                  <div className="avatar avatar-sm">
-                    {selectedTask.admin_username.slice(0, 2).toUpperCase()}
-                  </div>
-                  <span>{selectedTask.admin_username}</span>
-                </div>
-              </div>
-            )}
-          </div>
-        </Modal>
+        />
       )}
     </div>
   );

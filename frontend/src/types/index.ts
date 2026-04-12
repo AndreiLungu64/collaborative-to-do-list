@@ -47,3 +47,11 @@ export interface AuthContextType {
   register: (username: string, email: string, password: string) => Promise<User>;
   logout: () => void;
 }
+
+export interface ColumnDef {
+  id: string;
+  title: string;
+  icon: string;
+  color: string;
+}
+
