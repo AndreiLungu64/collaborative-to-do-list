@@ -1,5 +1,7 @@
 import Modal from '../common/Modal';
 import { Task } from '../../types';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 
 interface TaskDetailProps {
   task: Task;
@@ -38,7 +40,11 @@ const TaskDetail = ({ task, onClose }: TaskDetailProps) => {
         {task.description && (
           <div className="task-detail-desc">
             <span className="label-md">Descriere</span>
-            <p>{task.description}</p>
+            <div className="markdown-body" style={{ marginTop: '0.5rem', lineHeight: '1.6', fontSize: '14px' }}>
+              <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                {task.description}
+              </ReactMarkdown>
+            </div>
           </div>
         )}
         {task.admin_username && (
