@@ -9,6 +9,7 @@ services:
       JWT_SECRET: ${JWT_SECRET}
       PORT: 5000
       NODE_ENV: production
+      FRONTEND_URL: http://localhost:3000
     ports:
       - "5000:5000"
     restart: unless-stopped
@@ -19,10 +20,14 @@ services:
       retries: 3
 
   frontend:
-    build: ./frontend
+    build:
+      context: ./frontend
+      args:
+        VITE_API_URL: /api
     container_name: taskflow-frontend
     depends_on:
-      - backend
+      backend:
+        condition: service_healthy
     ports:
       - "3000:80"
     restart: unless-stopped

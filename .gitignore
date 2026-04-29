@@ -33,6 +33,12 @@ npm-debug.log*
 # Test coverage
 coverage/
 
+# Node.js binaries (should never be committed)
+node-v*/
+
+# Generated files
+*.docx
+generate_word.py
+
 # Misc
 .gemini/
-VISION_DOCUMENT.md
