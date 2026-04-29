@@ -1,0 +1,204 @@
+/* ─── Dashboard & Kanban Board ─── */
+
+.dashboard-page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Toolbar */
+.dashboard-toolbar {
+  padding: var(--spacing-4) var(--spacing-6);
+  background: var(--surface-container-low);
+}
+
+.toolbar-inner {
+  max-width: 1440px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-4);
+  flex-wrap: wrap;
+}
+
+.toolbar-search {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-2);
+  padding: var(--spacing-2) var(--spacing-4);
+  background: var(--surface-container-lowest);
+  border-radius: var(--radius-md);
+  border: 1px solid rgba(70, 69, 84, 0.15);
+  flex: 1;
+  max-width: 360px;
+  transition: all var(--transition-fast);
+}
+
+.toolbar-search:focus-within {
+  border-color: rgba(192, 193, 255, 0.3);
+  box-shadow: 0 0 0 3px rgba(192, 193, 255, 0.1);
+}
+
+.toolbar-search svg {
+  color: var(--on-surface-variant);
+  flex-shrink: 0;
+}
+
+.toolbar-search-input {
+  border: none;
+  background: transparent;
+  color: var(--on-surface);
+  font-family: var(--font-family);
+  font-size: 0.875rem;
+  width: 100%;
+  outline: none;
+}
+
+.toolbar-search-input::placeholder {
+  color: var(--outline);
+}
+
+.toolbar-filter {
+  max-width: 200px;
+  padding: var(--spacing-2) var(--spacing-4) !important;
+  font-size: 0.8125rem !important;
+}
+
+/* Kanban Board */
+.kanban-board {
+  flex: 1;
+  display: flex;
+  gap: var(--spacing-4);
+  padding: var(--spacing-4) var(--spacing-6);
+  overflow-x: auto;
+  max-width: 1440px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.kanban-column {
+  flex: 1;
+  min-width: 240px;
+  max-width: 320px;
+  display: flex;
+  flex-direction: column;
+}
+
+.kanban-column-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--spacing-3) var(--spacing-4);
+  margin-bottom: var(--spacing-3);
+  border-radius: var(--radius-lg);
+  background: var(--surface-container);
+  position: relative;
+}
+
+/* Subtle top accent line */
+.kanban-column-header::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: var(--spacing-4);
+  right: var(--spacing-4);
+  height: 2px;
+  background: var(--col-color, var(--primary));
+  border-radius: 1px;
+  opacity: 0.6;
+}
+
+.kanban-column-title {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-2);
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.kanban-column-icon {
+  font-size: 1rem;
+}
+
+.kanban-column-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-3);
+  padding: var(--spacing-2);
+  border-radius: var(--radius-lg);
+  min-height: 200px;
+  transition: background var(--transition-fast);
+}
+
+.kanban-column-body.drag-over {
+  background: rgba(192, 193, 255, 0.04);
+  border-radius: var(--radius-lg);
+}
+
+.kanban-empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-8) var(--spacing-4);
+  color: var(--outline);
+  font-size: 0.8125rem;
+}
+
+/* Task Detail Modal */
+.task-detail {
+  max-width: 480px;
+}
+
+.task-detail-body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-4);
+  padding-top: var(--spacing-2);
+}
+
+.task-detail-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--spacing-2) 0;
+}
+
+.task-detail-desc {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-2);
+  padding: var(--spacing-3);
+  background: var(--surface-container-lowest);
+  border-radius: var(--radius-md);
+}
+
+.task-detail-desc p {
+  font-size: 0.875rem;
+  color: var(--on-surface);
+  white-space: pre-wrap;
+}
+
+/* Loading */
+.dashboard-loading {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(11, 19, 38, 0.5);
+  z-index: 500;
+}
+
+.loader {
+  width: 40px;
+  height: 40px;
+  border: 3px solid rgba(192, 193, 255, 0.2);
+  border-top-color: var(--primary);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
