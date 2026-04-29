@@ -1,7 +1,8 @@
 #!/bin/bash
 # ═══════════════════════════════════════════════════════════════
-# TaskFlow — Debian Server Deployment Script
-# Run as root or with sudo: sudo bash deploy.sh
+# TaskFlow — Script de Deploy pentru Debian
+# Rulează ca root: sudo bash deploy.sh
+# Totul este plug-and-play — nu trebuie configurat nimic manual.
 # ═══════════════════════════════════════════════════════════════
 
 set -e
@@ -13,19 +14,19 @@ BLUE='\033[0;34m'
 NC='\033[0m'
 
 echo -e "${BLUE}═══════════════════════════════════════════════════${NC}"
-echo -e "${BLUE}  TaskFlow — Debian Server Deployment              ${NC}"
+echo -e "${BLUE}  TaskFlow — Deploy Automat pe Server Debian        ${NC}"
 echo -e "${BLUE}═══════════════════════════════════════════════════${NC}"
 echo ""
 
-# --- Step 1: System Updates ---
-echo -e "${YELLOW}[1/7] Actualizare sistem...${NC}"
+# --- Pas 1: Actualizare sistem ---
+echo -e "${YELLOW}[1/7] Actualizare pachete sistem...${NC}"
 apt-get update -y
 apt-get upgrade -y
 
-# --- Step 2: Install Docker if not present ---
+# --- Pas 2: Instalare Docker ---
 echo -e "${YELLOW}[2/7] Verificare Docker...${NC}"
 if ! command -v docker &> /dev/null; then
-    echo -e "${YELLOW}  → Instalare Docker Engine...${NC}"
+    echo -e "${YELLOW}  → Se instalează Docker Engine...${NC}"
     apt-get install -y ca-certificates curl gnupg
     install -m 0755 -d /etc/apt/keyrings
     curl -fsSL https://download.docker.com/linux/debian/gpg | gpg --dearmor -o /etc/apt/keyrings/docker.gpg
@@ -40,7 +41,7 @@ else
     echo -e "${GREEN}  ✓ Docker deja instalat: $(docker --version)${NC}"
 fi
 
-# --- Step 3: Install Git if not present ---
+# --- Pas 3: Instalare Git ---
 echo -e "${YELLOW}[3/7] Verificare Git...${NC}"
 if ! command -v git &> /dev/null; then
     apt-get install -y git
@@ -49,7 +50,7 @@ else
     echo -e "${GREEN}  ✓ Git deja instalat: $(git --version)${NC}"
 fi
 
-# --- Step 4: Clone or pull repository ---
+# --- Pas 4: Clonare sau actualizare cod ---
 echo -e "${YELLOW}[4/7] Pregătire cod sursă...${NC}"
 APP_DIR="/opt/taskflow"
 
@@ -67,41 +68,41 @@ else
 fi
 echo -e "${GREEN}  ✓ Cod sursă pregătit în $APP_DIR${NC}"
 
-# --- Step 5: Configure environment ---
-echo -e "${YELLOW}[5/7] Configurare mediu...${NC}"
-ENV_FILE="$APP_DIR/.env"
-BACKEND_ENV="$APP_DIR/backend/.env"
+# --- Pas 5: Configurare mediu (plug-and-play) ---
+echo -e "${YELLOW}[5/7] Configurare variabile de mediu...${NC}"
 
-if [ ! -f "$ENV_FILE" ]; then
-    echo -e "${YELLOW}  → Creare fișier .env...${NC}"
-    cat > "$ENV_FILE" <<'ENVEOF'
-# === TaskFlow Production Environment ===
-DATABASE_URL=postgresql://scraper:Scraper123%23@38.242.226.83:5432/MPI
-JWT_SECRET=taskflow-mpi-2026-super-secret-key
-VITE_API_URL=/api
-ENVEOF
-    echo -e "${GREEN}  ✓ Fișier .env creat${NC}"
+# Copiere .env.example → .env (credențiale deja completate)
+if [ ! -f "$APP_DIR/.env" ]; then
+    cp "$APP_DIR/.env.example" "$APP_DIR/.env"
+    echo -e "${GREEN}  ✓ Fișier .env creat din .env.example${NC}"
 else
     echo -e "${GREEN}  ✓ Fișier .env existent — păstrat${NC}"
 fi
 
-if [ ! -f "$BACKEND_ENV" ]; then
-    cp "$ENV_FILE" "$BACKEND_ENV"
-    echo "PORT=5000" >> "$BACKEND_ENV"
-    echo "NODE_ENV=production" >> "$BACKEND_ENV"
-    echo -e "${GREEN}  ✓ Backend .env creat${NC}"
+if [ ! -f "$APP_DIR/backend/.env" ]; then
+    cp "$APP_DIR/backend/.env.example" "$APP_DIR/backend/.env"
+    echo -e "${GREEN}  ✓ Backend .env creat din .env.example${NC}"
+else
+    echo -e "${GREEN}  ✓ Backend .env existent — păstrat${NC}"
 fi
 
-# --- Step 6: Build and start containers ---
+if [ ! -f "$APP_DIR/frontend/.env" ]; then
+    cp "$APP_DIR/frontend/.env.example" "$APP_DIR/frontend/.env"
+    echo -e "${GREEN}  ✓ Frontend .env creat din .env.example${NC}"
+else
+    echo -e "${GREEN}  ✓ Frontend .env existent — păstrat${NC}"
+fi
+
+# --- Pas 6: Build și pornire containere ---
 echo -e "${YELLOW}[6/7] Build și pornire containere Docker...${NC}"
 cd "$APP_DIR"
 docker compose down 2>/dev/null || true
 docker compose up -d --build
 
-echo -e "${YELLOW}  → Așteptare pornire backend (healthcheck)...${NC}"
-sleep 10
+echo -e "${YELLOW}  → Se așteaptă pornirea backend-ului (healthcheck)...${NC}"
+sleep 15
 
-# Check if containers are running
+# Verificare dacă containerele rulează
 if docker ps | grep -q taskflow-backend; then
     echo -e "${GREEN}  ✓ Backend pornit cu succes${NC}"
 else
@@ -114,34 +115,34 @@ else
     echo -e "${RED}  ✗ Frontend nu a pornit! Verifică logurile: docker compose logs frontend${NC}"
 fi
 
-# --- Step 7: Setup firewall ---
+# --- Pas 7: Configurare firewall ---
 echo -e "${YELLOW}[7/7] Configurare firewall...${NC}"
 if command -v ufw &> /dev/null; then
-    ufw allow 3000/tcp comment "TaskFlow Frontend"
-    ufw allow 5000/tcp comment "TaskFlow API"
-    echo -e "${GREEN}  ✓ Porturi 3000, 5000 deschise${NC}"
+    ufw allow 3000/tcp comment "TaskFlow Frontend" 2>/dev/null || true
+    ufw allow 5000/tcp comment "TaskFlow API" 2>/dev/null || true
+    echo -e "${GREEN}  ✓ Porturile 3000 și 5000 deschise${NC}"
 else
-    echo -e "${YELLOW}  → UFW nu este instalat, poți instala cu: apt install ufw${NC}"
-    echo -e "${YELLOW}  → Asigură-te că porturile 3000 și 5000 sunt deschise${NC}"
+    echo -e "${YELLOW}  → UFW nu este instalat — asigură-te că porturile 3000 și 5000 sunt deschise${NC}"
 fi
 
-# --- Done ---
+# --- Gata ---
 SERVER_IP=$(hostname -I | awk '{print $1}')
 echo ""
 echo -e "${GREEN}═══════════════════════════════════════════════════${NC}"
-echo -e "${GREEN}  ✅ TaskFlow deploy COMPLET!                      ${NC}"
+echo -e "${GREEN}  ✅ TaskFlow — Deploy COMPLET!                     ${NC}"
 echo -e "${GREEN}═══════════════════════════════════════════════════${NC}"
 echo ""
 echo -e "  🌐 Frontend:  ${BLUE}http://${SERVER_IP}:3000${NC}"
 echo -e "  🔧 API:       ${BLUE}http://${SERVER_IP}:5000/api/health${NC}"
 echo ""
 echo -e "  📋 Comenzi utile:"
-echo -e "    ${YELLOW}docker compose logs -f${NC}        — vezi logurile"
+echo -e "    ${YELLOW}cd /opt/taskflow${NC}"
+echo -e "    ${YELLOW}docker compose logs -f${NC}        — loguri în timp real"
 echo -e "    ${YELLOW}docker compose restart${NC}        — restart servicii"
 echo -e "    ${YELLOW}docker compose down${NC}           — oprire servicii"
-echo -e "    ${YELLOW}docker compose up -d --build${NC}  — rebuild + restart"
+echo -e "    ${YELLOW}docker compose up -d --build${NC}  — rebuild complet"
 echo ""
-echo -e "  🔑 Conturi test (din seed data):"
+echo -e "  🔑 Conturi de test (din seed data):"
 echo -e "    andrei@taskflow.dev   / parola123"
 echo -e "    maria@taskflow.dev    / parola123"
 echo -e "    cristian@taskflow.dev / parola123"
