@@ -40,5 +40,9 @@ node-v*/
 *.docx
 generate_word.py
 
+# Docs
+*.md
+!README.md
+
 # Misc
 .gemini/
