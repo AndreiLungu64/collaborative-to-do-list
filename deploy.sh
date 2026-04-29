@@ -118,11 +118,11 @@ fi
 # --- Pas 7: Configurare firewall ---
 echo -e "${YELLOW}[7/7] Configurare firewall...${NC}"
 if command -v ufw &> /dev/null; then
-    ufw allow 3000/tcp comment "TaskFlow Frontend" 2>/dev/null || true
+    ufw allow 8081/tcp comment "TaskFlow Frontend" 2>/dev/null || true
     ufw allow 5000/tcp comment "TaskFlow API" 2>/dev/null || true
-    echo -e "${GREEN}  ✓ Porturile 3000 și 5000 deschise${NC}"
+    echo -e "${GREEN}  ✓ Porturile 8081 și 5000 deschise${NC}"
 else
-    echo -e "${YELLOW}  → UFW nu este instalat — asigură-te că porturile 3000 și 5000 sunt deschise${NC}"
+    echo -e "${YELLOW}  → UFW nu este instalat — asigură-te că porturile 8081 și 5000 sunt deschise${NC}"
 fi
 
 # --- Gata ---
@@ -132,7 +132,7 @@ echo -e "${GREEN}═════════════════════
 echo -e "${GREEN}  ✅ TaskFlow — Deploy COMPLET!                     ${NC}"
 echo -e "${GREEN}═══════════════════════════════════════════════════${NC}"
 echo ""
-echo -e "  🌐 Frontend:  ${BLUE}http://${SERVER_IP}:3000${NC}"
+echo -e "  🌐 Frontend:  ${BLUE}http://${SERVER_IP}:8081${NC}"
 echo -e "  🔧 API:       ${BLUE}http://${SERVER_IP}:5000/api/health${NC}"
 echo ""
 echo -e "  📋 Comenzi utile:"
