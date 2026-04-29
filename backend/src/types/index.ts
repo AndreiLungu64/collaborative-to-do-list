@@ -27,7 +27,6 @@ export interface Task {
   created_at?: Date;
   updated_at?: Date;
   accessList?: AccessUser[];
-  isOverdue?: boolean;
 }
 
 export interface AccessUser {

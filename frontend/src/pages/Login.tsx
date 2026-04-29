@@ -3,35 +3,12 @@
  * @description Login page matching the Stitch "TaskFlow Login Page" design.
  * Glassmorphism card, deep slate background, indigo accents.
  */
-import { useState, FormEvent } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { useAuth } from '../hooks/useAuth';
-import toast from 'react-hot-toast';
+import LoginForm from '../components/auth/LoginForm';
 import './Auth.css';
 
 const Login = () => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [loading, setLoading] = useState(false);
-  const { login } = useAuth();
-  const navigate = useNavigate();
-
-  const handleSubmit = async (e: FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-    try {
-      await login(email, password);
-      toast.success('Autentificare reușită!');
-      navigate('/dashboard');
-    } catch (err: unknown) {
-      const axiosErr = err as { response?: { data?: { error?: string } } };
-      toast.error(axiosErr.response?.data?.error || 'Eroare la autentificare.');
-    } finally {
-      setLoading(false);
-    }
-  };
-
   return (
     <div className="auth-page">
       {/* Decorative gradient orbs */}
@@ -56,44 +33,7 @@ const Login = () => {
           <p className="auth-subtitle">Gestionare colaborativă a task-urilor</p>
         </div>
 
-        <form onSubmit={handleSubmit} className="auth-form">
-          <div className="input-group">
-            <label htmlFor="login-email">Email</label>
-            <input
-              id="login-email"
-              type="email"
-              className="input-field"
-              placeholder="exemplu@email.com"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-              autoFocus
-            />
-          </div>
-
-          <div className="input-group">
-            <label htmlFor="login-password">Parolă</label>
-            <input
-              id="login-password"
-              type="password"
-              className="input-field"
-              placeholder="••••••••"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-              minLength={6}
-            />
-          </div>
-
-          <button
-            type="submit"
-            className="btn btn-primary btn-lg w-full"
-            disabled={loading}
-            id="sign-in-btn"
-          >
-            {loading ? 'Se autentifică...' : 'Sign In'}
-          </button>
-        </form>
+        <LoginForm />
 
         <p className="auth-switch">
           Nu ai cont? <Link to="/register">Înregistrează-te</Link>

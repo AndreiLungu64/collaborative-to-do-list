@@ -30,13 +30,7 @@ router.post(
       .withMessage('Titlul este obligatoriu (max 100 caractere).'),
     body('deadline')
       .isISO8601()
-      .withMessage('Deadline-ul trebuie să fie o dată validă.')
-      .custom((value: string) => {
-        if (new Date(value) < new Date()) {
-          throw new Error('Deadline-ul nu poate fi o dată din trecut.');
-        }
-        return true;
-      }),
+      .withMessage('Deadline-ul trebuie să fie o dată validă.'),
     body('visibility')
       .optional()
       .isIn(['personal', 'public'])
@@ -53,36 +47,7 @@ router.post(
 router.get('/:id', TasksController.getById);
 
 // PUT /api/tasks/:id — Edit task (admin only)
-router.put(
-  '/:id',
-  isTaskAdmin as any,
-  [
-    body('title')
-      .optional()
-      .trim()
-      .isLength({ min: 1, max: 100 })
-      .withMessage('Titlul este obligatoriu (max 100 caractere).'),
-    body('deadline')
-      .optional()
-      .isISO8601()
-      .withMessage('Deadline-ul trebuie să fie o dată validă.')
-      .custom((value: string) => {
-        if (new Date(value) < new Date()) {
-          throw new Error('Deadline-ul nu poate fi o dată din trecut.');
-        }
-        return true;
-      }),
-    body('visibility')
-      .optional()
-      .isIn(['personal', 'public'])
-      .withMessage('Vizibilitatea trebuie să fie "personal" sau "public".'),
-    body('priority')
-      .optional()
-      .isIn(['low', 'medium', 'high', 'critical'])
-      .withMessage('Prioritatea trebuie să fie: low, medium, high, critical.'),
-  ],
-  TasksController.update
-);
+router.put('/:id', isTaskAdmin as any, TasksController.update);
 
 // DELETE /api/tasks/:id — Delete task (admin only)
 router.delete('/:id', isTaskAdmin as any, TasksController.remove);

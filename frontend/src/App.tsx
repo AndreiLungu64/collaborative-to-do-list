@@ -10,6 +10,7 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
 import Calendar from './pages/Calendar';
+import CompletedTasks from './pages/CompletedTasks';
 
 const App = () => {
   return (
@@ -34,6 +35,14 @@ const App = () => {
             element={
               <ProtectedRoute>
                 <Calendar />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/completed"
+            element={
+              <ProtectedRoute>
+                <CompletedTasks />
               </ProtectedRoute>
             }
           />

@@ -135,14 +135,12 @@ const TaskModel = {
    */
   async findForCalendar(userId: number, startDate: string, endDate: string): Promise<Task[]> {
     const result = await db.query(
-      `SELECT DISTINCT t.*, u.username AS admin_username,
-       (t.status = 'overdue' OR (t.deadline < NOW() AND t.status != 'completed')) AS "isOverdue"
+      `SELECT DISTINCT t.*, u.username AS admin_username
        FROM tasks t
        JOIN users u ON t.admin_id = u.id
        LEFT JOIN task_access ta ON t.id = ta.task_id
        WHERE (t.admin_id = $1 OR t.visibility = 'public' OR ta.user_id = $1)
          AND t.deadline >= $2 AND t.deadline <= $3
-         AND t.status != 'completed'
        ORDER BY t.deadline ASC`,
       [userId, startDate, endDate]
     );

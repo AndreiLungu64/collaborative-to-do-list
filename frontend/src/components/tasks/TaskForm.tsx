@@ -4,7 +4,8 @@
  * Matches the Stitch glassmorphism modal design.
  */
 import { useState, useEffect, FormEvent, ChangeEvent } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import Modal from '../common/Modal';
+import Button from '../common/Button';
 import { formatDateForInput } from '../../utils/dateHelpers';
 import { Task, TaskFormData, User } from '../../types';
 import './TaskForm.css';
@@ -70,34 +71,9 @@ const TaskForm = ({ isOpen, onClose, onSubmit, task = null, users: _users = [] }
   };
 
   return (
-    <AnimatePresence>
-      {isOpen && (
-        <motion.div
-          className="modal-overlay"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          onClick={onClose}
-        >
-          <motion.div
-            className="modal glass-card-elevated"
-            initial={{ opacity: 0, scale: 0.95, y: 20 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.95, y: 20 }}
-            transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className="modal-header">
-              <h2 className="headline-sm">{task ? 'Editează Task' : 'Task Nou'}</h2>
-              <button className="btn btn-ghost btn-sm" onClick={onClose} id="close-modal-btn">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
-                </svg>
-              </button>
-            </div>
-
-            <form onSubmit={handleSubmit} className="modal-body">
-              {/* Title */}
+    <Modal isOpen={isOpen} onClose={onClose} title={task ? 'Editează Task' : 'Task Nou'}>
+      <form onSubmit={handleSubmit} className="modal-body">
+        {/* Title */}
               <div className="input-group">
                 <label htmlFor="task-title">Titlu *</label>
                 <input
@@ -191,23 +167,21 @@ const TaskForm = ({ isOpen, onClose, onSubmit, task = null, users: _users = [] }
 
               {/* Actions */}
               <div className="modal-footer">
-                <button type="button" className="btn btn-ghost" onClick={onClose}>
+                <Button type="button" variant="ghost" onClick={onClose}>
                   Anulează
-                </button>
-                <button
+                </Button>
+                <Button
                   type="submit"
-                  className="btn btn-primary"
+                  variant="primary"
                   disabled={submitting || !formData.title.trim()}
+                  isLoading={submitting}
                   id="submit-task-btn"
                 >
                   {submitting ? 'Se salvează...' : task ? 'Salvează' : 'Creează Task'}
-                </button>
+                </Button>
               </div>
             </form>
-          </motion.div>
-        </motion.div>
-      )}
-    </AnimatePresence>
+    </Modal>
   );
 };
 

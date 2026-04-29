@@ -4,26 +4,18 @@
  * Monthly grid with color-coded task pills by priority.
  */
 import { useState, useEffect, useMemo } from 'react';
-import { motion } from 'framer-motion';
 import Navbar from '../components/common/Navbar';
 import api from '../services/api';
 import { getCalendarDays, getMonthRange } from '../utils/dateHelpers';
 import { Task } from '../types';
+import Button from '../components/common/Button';
+import CalendarView from '../components/calendar/CalendarView';
 import './Calendar.css';
 
 const MONTH_NAMES = [
   'Ianuarie', 'Februarie', 'Martie', 'Aprilie', 'Mai', 'Iunie',
   'Iulie', 'August', 'Septembrie', 'Octombrie', 'Noiembrie', 'Decembrie'
 ];
-
-const DAY_NAMES = ['Lun', 'Mar', 'Mie', 'Joi', 'Vin', 'Sâm', 'Dum'];
-
-const PRIORITY_COLORS: Record<string, string> = {
-  low: 'var(--priority-low)',
-  medium: 'var(--priority-medium)',
-  high: 'var(--priority-high)',
-  critical: 'var(--priority-critical)',
-};
 
 type ViewType = 'month' | 'week' | 'day';
 
@@ -95,23 +87,23 @@ const Calendar = () => {
       <div className="calendar-toolbar">
         <div className="toolbar-inner">
           <div className="calendar-nav">
-            <button className="btn btn-secondary btn-sm" onClick={goToPrev} id="prev-month-btn">
+            <Button variant="secondary" size="sm" onClick={goToPrev} id="prev-month-btn">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <polyline points="15 18 9 12 15 6" />
               </svg>
-            </button>
+            </Button>
             <h2 className="headline-md calendar-month-title">
               {MONTH_NAMES[month]} {year}
             </h2>
-            <button className="btn btn-secondary btn-sm" onClick={goToNext} id="next-month-btn">
+            <Button variant="secondary" size="sm" onClick={goToNext} id="next-month-btn">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <polyline points="9 18 15 12 9 6" />
               </svg>
-            </button>
+            </Button>
           </div>
 
           <div className="calendar-actions">
-            <button className="btn btn-ghost btn-sm" onClick={goToToday}>Azi</button>
+            <Button variant="ghost" size="sm" onClick={goToToday}>Azi</Button>
             <div className="view-toggle">
               {(['month', 'week', 'day'] as ViewType[]).map((v) => (
                 <button
@@ -128,55 +120,12 @@ const Calendar = () => {
       </div>
 
       {/* Calendar Grid */}
-      <div className="calendar-grid-container">
-        {/* Day headers */}
-        <div className="calendar-header-row">
-          {DAY_NAMES.map((day) => (
-            <div key={day} className="calendar-header-cell label-md">
-              {day}
-            </div>
-          ))}
-        </div>
-
-        {/* Day cells */}
-        <div className="calendar-grid">
-          {calendarDays.map((day, index) => {
-            const dateKey = day.toISOString().split('T')[0];
-            const dayTasks = tasksByDate[dateKey] || [];
-            const isCurrentMonth = day.getMonth() === month;
-            const isToday = dateKey === todayKey;
-
-            return (
-              <motion.div
-                key={index}
-                className={`calendar-cell ${!isCurrentMonth ? 'other-month' : ''} ${isToday ? 'today' : ''}`}
-                whileHover={{ background: 'rgba(192, 193, 255, 0.04)' }}
-              >
-                <span className={`calendar-day-number ${isToday ? 'today-ring' : ''}`}>
-                  {day.getDate()}
-                </span>
-
-                <div className="calendar-events">
-                  {dayTasks.slice(0, 3).map((task) => (
-                    <div
-                      key={task.id}
-                      className="calendar-event-pill"
-                      style={{ '--pill-color': PRIORITY_COLORS[task.priority] } as React.CSSProperties}
-                      title={`${task.title} (${task.priority})`}
-                    >
-                      <span className="event-dot" />
-                      <span className="event-text">{task.title}</span>
-                    </div>
-                  ))}
-                  {dayTasks.length > 3 && (
-                    <span className="calendar-more">+{dayTasks.length - 3} mai multe</span>
-                  )}
-                </div>
-              </motion.div>
-            );
-          })}
-        </div>
-      </div>
+      <CalendarView
+        calendarDays={calendarDays}
+        tasksByDate={tasksByDate}
+        month={month}
+        todayKey={todayKey}
+      />
     </div>
   );
 };
