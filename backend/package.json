@@ -2,10 +2,10 @@
   "name": "taskflow-backend",
   "version": "1.0.0",
   "description": "TaskFlow — Collaborative To-Do App Backend",
-  "main": "dist/app.js",
+  "main": "dist/src/app.js",
   "scripts": {
     "build": "tsc",
-    "start": "node dist/app.js",
+    "start": "node dist/src/app.js",
     "dev": "tsx watch src/app.ts",
     "lint": "eslint src/",
     "test": "jest --coverage",
